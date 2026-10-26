@@ -1,9 +1,21 @@
 {
   "name": "kd-hologram",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "KD Hologram — enterprise AI workspace by KD Industries",
-  "scripts": { "start": "node server.js" },
+  "scripts": { "start": "node server.js", "dev": "node --watch server.js" },
   "engines": { "node": ">=20" },
-  "dependencies": { "express": "^5.1.0" }
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-pg-simple": "^10.0.0",
+    "connect-sqlite3": "^0.9.13",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "helmet": "^8.0.0",
+    "better-sqlite3": "^11.8.1",
+    "pg": "^8.13.1",
+    "multer": "^2.0.0",
+    "speakeasy": "^2.0.0"
+  }
 }
