@@ -1,0 +1,10 @@
+const express = require('express');
+const path = require('path');
+const app = express();
+const port = process.env.PORT || 3000;
+app.disable('x-powered-by');
+app.use(express.json({ limit: '1mb' }));
+app.get('/api/health', (_req, res) => res.json({ ok: true, name: 'KD Hologram', version: '0.1.0', mode: 'prototype' }));
+app.use(express.static(path.join(__dirname)));
+app.get('*path', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.listen(port, '0.0.0.0', () => console.log(`KD Hologram listening on :${port}`));
