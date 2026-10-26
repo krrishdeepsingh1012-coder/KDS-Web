@@ -53,7 +53,7 @@ async function init() {
   }
   const adminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
   const adminPassword = process.env.ADMIN_PASSWORD || '';
-  if (adminEmail && adminPassword.length >= 12) {
+  if (adminEmail && adminPassword.length >= 12 && !/replace|change-this|example\.com/i.test(adminPassword + ' ' + adminEmail)) {
     const existing = await query('SELECT id FROM users WHERE email = ?', [adminEmail]);
     if (!existing.rows.length) {
       await query('INSERT INTO users (id,email,name,password_hash,role,created_at) VALUES (?,?,?,?,?,?)',
@@ -220,4 +220,4 @@ app.patch('/api/admin/users/:id/role', auth, admin, async (req,res)=>{
 });
 app.get('/api/admin/audit', auth, admin, async (req,res)=>{const r=await query('SELECT id,user_id,action,detail,ip,created_at FROM audit_logs ORDER BY created_at DESC LIMIT 200');res.json({events:r.rows});});
 app.use((err,req,res,next)=>{console.error(err);if(res.headersSent)return next(err);res.status(err.code==='LIMIT_FILE_SIZE'?413:500).json({error:err.code==='LIMIT_FILE_SIZE'?'Each file must be under 8 MB.':(isProd?'Internal server error':err.message)});});
-(async()=>{if(isProd&&(!process.env.SESSION_SECRET||process.env.SESSION_SECRET.length<32)){console.error('SESSION_SECRET must be set to a random value of at least 32 characters in production.');process.exit(1);}await init();app.use(express.static(path.join(__dirname),{index:'index.html'}));app.get('*path',(req,res)=>res.sendFile(path.join(__dirname,'index.html')));app.listen(port,'0.0.0.0',()=>console.log('KD Hologram listening on port '+port+' ('+(usePg?'PostgreSQL':'SQLite')+')'));})().catch(e=>{console.error('Startup failed:',e);process.exit(1);});
+(async()=>{if(isProd&&(!process.env.SESSION_SECRET||process.env.SESSION_SECRET.length<32||/replace|change-this/i.test(process.env.SESSION_SECRET))){console.error('SESSION_SECRET must be set to a random value of at least 32 characters in production.');process.exit(1);}await init();app.use(express.static(path.join(__dirname),{index:'index.html'}));app.get('*path',(req,res)=>res.sendFile(path.join(__dirname,'index.html')));app.listen(port,'0.0.0.0',()=>console.log('KD Hologram listening on port '+port+' ('+(usePg?'PostgreSQL':'SQLite')+')'));})().catch(e=>{console.error('Startup failed:',e);process.exit(1);});
